@@ -50,131 +50,125 @@
 
    <div>
        <?php
-       require_once "../Classes/PHPExcel.php";
-       include 'globalMethods.php';
-       deleteUploads();
-       function printForm($headings){
-       echo '<div class="container">';
-       echo '<form  action="/clare/php/clare/formatExcel.php" method="POST" enctype="multipart/form-data">';
-       echo '<h6>Variable de grupo:</h6>';
-       echo '<select  class="mdl-textfield__input validate" id="groupVariable" name="groupVariable" >';
-       echo '<option value="" disabled selected>Seleccione la variable de grupo</option>';
-       for ($i=0; $i < count($headings); $i++) {
-         if($headings[$i]!=null){
-           echo '<option value="' . $i. '">'
-               . $headings[$i]
-               . '</option>';
-         }
-       }
-       echo '</select>';
-       echo '<h6>Variables de seleccion:</h6>';
-       for ($i=0; $i < count($headings); $i++) {
-         if($headings[$i]!=null){
-          echo '<select  class="mdl-textfield__input validate" id="selected" name="selected[]" required multiple>';
-           echo '<option value="" disabled selected>Seleccione las variables de selección</option>';
-           for ($i=0; $i < count($headings); $i++) {
-             if($headings[$i]!=null){
-               echo '<option value="' . $i. '">'
-                   . $headings[$i]
-                   . '</option>';
-             }
-           }
-           echo '</select>';
-           // echo '<div style="">';
-           // echo '<p>';
-           // echo '<label>';
-           // echo '<input type="checkbox" name="selected[]" id='.$i.' class="filled-in"   value='.$i.'/>';
-           // echo '<label for="'.$i.'">'.$headings[$i].'</label>';
-           // echo '</p>';
-           // echo '</div>';
-            // echo '<input type="checkbox" name="selected[]" value='.$i.'> '.$headings[$i].' <br>';
-         }
-       }
-      echo ' <p>';
-      echo '   <label>';
-      echo '     <input class="with-gap" value="1" name="type" type="radio" checked />';
-      echo '     <span>Solo datos</span>';
-      echo '   </label>';
-      echo ' </p>';
-      echo ' <p>';
-      echo '   <label>';
-      echo '     <input class="with-gap" value="2" name="type" type="radio" />';
-      echo '     <span>Porcentaje</span>';
-      echo '   </label>';
-      echo ' </p>';
-      echo ' <p>';
-      echo '   <label>';
-      echo '     <input class="with-gap" value="3" name="type" type="radio"  />';
-      echo '     <span>Porcentaje e intervalo</span>';
-      echo '   </label>';
-      echo ' </p>';
-       echo '<button id="btnsubmit" class="btn-large waves-effect waves-light teal lighten-1 right" type="submit" style="margin-left:10px;">Procesar</button>';
-       echo '<button class="btn-large waves-effect waves-light left deep-orange lighten-1" onClick="javascript:history.go(-1)" type="button" >Atrás</button>';
-       echo '</form>';
-       echo '</div>';
-       }
-       function printTable($worksheet){
-         $lastRow = $worksheet->getHighestRow();
-         $lastColumn= $worksheet->getHighestColumn();
-         $lastColumnIndex = PHPExcel_Cell::columnIndexFromString($lastColumn);
-         $headings = getHeadings($worksheet);
-         echo '<div style="overflow-x:auto;max-height:400px";margin:30px;>';
-         echo "<table class='responsive-table'>";
-         echo "<thead>";
-         echo "<tr>";
-         for ($i = 0; $i <= count($headings)-1; $i++) {
-           if($headings[$i]!=null){
+require_once "../Classes/PHPExcel.php";
+include 'globalMethods.php';
+deleteUploads();
+function printForm($headings) {
+    echo '<div class="container">';
+    echo '<form  action="/clare/php/clare/formatExcel.php" method="POST" enctype="multipart/form-data">';
+    echo '<h6>Variable de grupo:</h6>';
+    echo '<select  class="mdl-textfield__input validate" id="groupVariable" name="groupVariable" >';
+    echo '<option value="" disabled selected>Seleccione la variable de grupo</option>';
+    echo '<option value="-1">Sin variable de grupo</option>';
+    for ($i = 0;$i < count($headings);$i++) {
+        if ($headings[$i] != null) {
+            echo '<option value="' . $i . '">' . $headings[$i] . '</option>';
+        }
+    }
+    echo '</select>';
+    echo '<h6>Variables de seleccion:</h6>';
+    for ($i = 0;$i < count($headings);$i++) {
+        if ($headings[$i] != null) {
+            echo '<select  class="mdl-textfield__input validate" id="selected" name="selected[]" required multiple>';
+            echo '<option value="" disabled selected>Seleccione las variables de selección</option>';
+            for ($i = 0;$i < count($headings);$i++) {
+                if ($headings[$i] != null) {
+                    echo '<option value="' . $i . '">' . $headings[$i] . '</option>';
+                }
+            }
+            echo '</select>';
+        }
+    }
+    echo '<h6>Filtrar por:</h6>';
+    echo '<div class="left">';
+    echo ' <p>';
+    echo '   <label>';
+    echo '     <input class="with-gap" value="1" name="type" type="radio" checked />';
+    echo '     <span>Solo datos</span>';
+    echo '   </label>';
+    echo ' </p>';
+    echo ' <p>';
+    echo '   <label>';
+    echo '     <input class="with-gap" value="2" name="type" type="radio" />';
+    echo '     <span>Porcentaje</span>';
+    echo '   </label>';
+    echo ' </p>';
+    echo ' <p>';
+    echo '   <label>';
+    echo '     <input class="with-gap" value="3" name="type" type="radio"  />';
+    echo '     <span>Porcentaje e intervalo</span>';
+    echo '   </label>';
+    echo '</div>';
+    echo '<div class="right">';
+    echo '<p >';
+    echo '<label>';
+    echo '<input type="checkbox" value="false" class="filled-in" id="acumulated" name="acumulated"/>';
+    echo '<span>Mostrar acumulado</span>';
+    echo '</label>';
+    echo ' </p>';
+    echo '</div>';
+    echo '<div class="col s12" style="margin-top:20px;padding:0!important">';
+    echo '<button id="btnsubmit" class="btn-large waves-effect waves-light teal lighten-1 right" type="submit">Procesar</button>';
+    echo '<button class="btn-large waves-effect waves-light left deep-orange lighten-1" onClick="javascript:history.go(-1)" type="button" >Atrás</button>';
+    echo '</div>';
+    echo '</form>';
+    echo '</div>';
+}
+function printTable($worksheet) {
+    $lastRow = $worksheet->getHighestRow();
+    $lastColumn = $worksheet->getHighestColumn();
+    $lastColumnIndex = PHPExcel_Cell::columnIndexFromString($lastColumn);
+    $headings = getHeadings($worksheet);
+    echo '<div style="overflow-x:auto;max-height:400px";margin:30px;>';
+    echo "<table class='responsive-table'>";
+    echo "<thead>";
+    echo "<tr>";
+    for ($i = 0;$i <= count($headings) - 1;$i++) {
+        if ($headings[$i] != null) {
             echo '<th>';
             echo $headings[$i];
             echo '</th>';
-          }
-          }
-          echo "</thead>";
-          echo "<tbody>";
-         for ($row = 2; $row <= $lastRow; $row++) {
-            echo "<tr>";
-             for ($column = 0; $column <= $lastColumnIndex; $column++) {
-               $columString = PHPExcel_Cell::stringFromColumnIndex($column);
-               $value = $worksheet->getCell($columString .$row)->getValue();
+        }
+    }
+    echo "</thead>";
+    echo "<tbody>";
+    for ($row = 2;$row <= $lastRow;$row++) {
+        echo "<tr>";
+        for ($column = 0;$column <= $lastColumnIndex;$column++) {
+            $columString = PHPExcel_Cell::stringFromColumnIndex($column);
+            $value = $worksheet->getCell($columString . $row)->getValue();
+            echo "<td>";
+            echo $value;
+            echo "</td>";
+        }
+        echo "</tr>";
+    }
+    echo "</tbody>";
+    echo "</table>";
+    echo '</div>';
+}
+if (isset($_FILES['excelFile']) && !empty($_FILES['excelFile']['tmp_name'])) {
+    $tmpfname = $_FILES['excelFile']['tmp_name'];
+    $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
+    $excelObj = $excelReader->load($tmpfname);
+    $worksheet = $excelObj->getSheet(0);
+    $headings = getHeadings($worksheet);
+    // Leemos los headings
+    printTable($worksheet);
+    $target_dir = "../../uploads/";
+    $target_file = $target_dir . basename($tmpfname);
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    // Check if image file is a actual image or fake image
+    if (move_uploaded_file($tmpfname, $target_file)) {
+        // Se subio
 
-               echo "<td>";
-               echo $value;
-               echo "</td>";
+    } else {
+        // No subio
 
-             }
-              echo "</tr>";
-         }
-         echo "</tbody>";
-         echo "</table>";
-         echo '</div>';
-       }
-
-
-         if (isset($_FILES['excelFile']) && !empty($_FILES['excelFile']['tmp_name'])) {
-          $tmpfname = $_FILES['excelFile']['tmp_name'];
-       		$excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
-       		$excelObj = $excelReader->load($tmpfname);
-       		$worksheet = $excelObj->getSheet(0);
-           $headings = getHeadings($worksheet);
-           // Leemos los headings
-           printTable($worksheet);
-
-           $target_dir = "../../uploads/";
-           $target_file = $target_dir . basename($tmpfname);
-           $uploadOk = 1;
-           $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-           // Check if image file is a actual image or fake image
-
-           if (move_uploaded_file($tmpfname, $target_file)) {
-                   // Se subio
-               } else {
-                  // No subio
-            }
-
-
-
-         }
-       ?>
+    }
+}
+?>
   </div>
 
 
@@ -191,8 +185,8 @@
         </div>
         <div class="col s12 m12">
         <?php
-          printForm($headings);
-         ?>
+printForm($headings);
+?>
         </div>
       </div>
     </div>
