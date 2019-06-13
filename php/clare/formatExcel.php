@@ -107,7 +107,6 @@ function countVariablesPerGroup($selected, $formatedSelected, $worksheet, $group
     }
 }
 function countVariables($selected, $formatedSelected, $worksheet) {
-    // echo json_encode($formatedSelected[0]);
     for ($i = 0;$i < count($selected);$i++) {
         $columnData = new \stdClass();
         $columnData = getColumnData($selected[$i], $worksheet);
@@ -124,15 +123,25 @@ function calculatePercentage($total, $num) {
     }
 }
 function calculateConfidenceInterval($total, $num) {
-    $x = $num;
-    $n = $total;
     $confidence = 95;
-    $desviation = 13.7;
+    $proportion = $num/$total;
+    $percentaje = $proportion*100;
+    $ee = sqrt(($proportion)*((1-$proportion)/$total));
     $zetaAlphaMedio = 1.96;
-    $alphaMedio = ((1 - ($confidence / 100)) / 2);
-    $mediaMinor = $x - ($zetaAlphaMedio * ($desviation / sqrt($n)));
-    $mediaMayor = $x + ($zetaAlphaMedio * ($desviation / sqrt($n)));
-    return "[" . number_format((float)$mediaMinor, 1, '.', '') . "," . number_format((float)$mediaMayor, 1, '.', '') . "]";
+    $correction = 0.5/$total;
+    $eeZ = $ee*$zetaAlphaMedio;
+    $limitMinor = ($proportion-$eeZ-$correction)*100;
+    $limitMayor = ($proportion+$eeZ+$correction)*100;
+    // $x = $num;
+    // $n = $total;
+    // $desviation = 3.17;
+    // $zetaAlphaMedio = 1.96;
+    // $alphaMedio = ((1 - ($confidence / 100)) / 2);
+    // $mediaMinor = $x - ($zetaAlphaMedio * ($desviation / sqrt($n)));
+    // $mediaMayor = $x + ($zetaAlphaMedio * ($desviation / sqrt($n)));
+    // return "[" . number_format((float)$mediaMinor, 1, '.', '') . "," . number_format((float)$mediaMayor, 1, '.', '') . "]";
+    return "[" . number_format((float)$limitMinor, 1, '.', '') . "," . number_format((float)$limitMayor, 1, '.', '') . "]";
+
 }
 function calculateStandarVariation() {
     $nums = array(58.8, 41.2);
@@ -148,7 +157,7 @@ function calculateStandarVariation() {
     $vari = $sum2 / count($nums);
     $sq = sqrt($vari);
     // echo "La varianza es: $vari <br>";
-    // echo "La desviacion estandar es: ".$sq;
+    // echo "La desviaICon estandar es: ".$sq;
 
 }
 function calculatePercentageAndAcum($formatedValue) {
@@ -162,7 +171,7 @@ function calculatePercentageAndAcum($formatedValue) {
         }
         $item->percentageFormatted = number_format((float)$item->percentage, 1, '.', '') . '%';
         $item->acumulatedFormatted = number_format((float)$item->acumulated, 1, '.', '') . '%';
-        $item->confidenceInterval = calculateConfidenceInterval(100, $item->percentage);
+        $item->confidenceInterval = calculateConfidenceInterval($formatedValue->total->number, $item->number);
     }
 }
 function calculatePercentageAndAcumNoGroup($formatedValue, $itemTotal) {
@@ -176,7 +185,7 @@ function calculatePercentageAndAcumNoGroup($formatedValue, $itemTotal) {
         }
         $item->percentageFormatted = number_format((float)$item->percentage, 1, '.', '') . '%';
         $item->acumulatedFormatted = number_format((float)$item->acumulated, 1, '.', '') . '%';
-        $item->confidenceInterval = calculateConfidenceInterval(100, $item->percentage);
+        $item->confidenceInterval = calculateConfidenceInterval($itemTotal->total->number, $item->number);
     }
 }
 function calculatePercentageAndAcumTotal($formatedSelected, $itemTotal) {
@@ -272,8 +281,8 @@ function compareTitlePerColumnWithoutGroup($indexY, $data, $formatedSelected, $i
 
 function printNoGroupTableWord($formatedSelected, $worksheet, $selected, $radioVal) {
   echo '<div id="exportContentNoGroup" style="width:100%">';
-  echo "<table style='width:100%;    width:100.0%;border-collapse:collapse;border:none;mso-border-alt:solid #BFBFBF .5pt;
-   mso-border-themecolor:background1;mso-border-themeshade:191;mso-yfti-tbllook:1184;mso-padding-alt:0cm 5.4pt 0cm 5.4pt'>";
+  echo "<table style='width:100%;width:100.0%;border-collapse:collapse;border:none;mso-border-alt:solid #BFBFBF .5pt;
+   mso-border-themecolor:background1;mso-border-themeshade:191;mso-yfti-tbllook:1184;mso-padding-alt:0cm 5.4pt 0cm 5.4pt;font-family:Arial'>";
     echo "<tbody>";
     for ($row = 0;$row < count($selected);$row++) {
         echo "<tr style='background-color:#E0F2F1;'>";
@@ -322,7 +331,7 @@ mso-border-top-themecolor:background1;mso-border-top-themeshade:191;
 mso-border-alt:solid #BFBFBF .5pt;mso-border-themecolor:background1;
 mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
             echo '<b>';
-            echo "CI 95%";
+            echo "IC 95%";
             echo '</b>';
             echo "</td>";
         }
@@ -446,7 +455,7 @@ mso-border-top-themecolor:background1;mso-border-top-themeshade:191;
 mso-border-alt:solid #BFBFBF .5pt;mso-border-themecolor:background1;
 mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
             echo '<b>';
-            echo "CI 95%";
+            echo "IC 95%";
             echo '</b>';
             echo "</td>";
         }
@@ -1164,7 +1173,7 @@ if ($gv != - 1) {
 <html lang="es">
 <head>
     <title>Bienvenido</title>
-    <!--Optimizacion en móbiles-->
+    <!--OptimizaICon en móbiles-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="utf-8">
     <meta name="theme-color" content="#0097A7">
@@ -1184,7 +1193,7 @@ if ($gv != - 1) {
 </head>
 
 <body class="" >
-<!--Barra de navegación-->
+<!--Barra de navegaICón-->
    <nav class="white" role="navigation">
     <div class="nav-wrapper container">
       <a id="logo-container" href="index.html" class="brand-logo"><img src="../../res/logo1.jpg" style="margin-top:7px;" alt="Smiley face" height="50" > </a>
@@ -1263,10 +1272,10 @@ echo '<a onclick="Export2DocGroup()" class="btn-floating btn-large waves-effect 
             type: 'application/msword'
         });
 
-        // Specify link url
+        // SpeICfy link url
         var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
 
-        // Specify file name
+        // SpeICfy file name
         filename = filename?filename+'.doc':'document.doc';
 
         // Create download link element
