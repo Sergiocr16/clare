@@ -63,16 +63,26 @@ function obtainValueAtCoordinate($x, $y, $worksheet) {
     return $cellValue;
 }
 function deleteUploads() {
-    $files = glob('../../uploads/*tmp');
-    foreach ($files as $file) {
-        unlink($file);
+  $root = $_SERVER['DOCUMENT_ROOT'].'/uploads/';
+  if ($handle = opendir($root)) {
+    while (false !== ($entry = readdir($handle))) {
+        if ($entry != "." && $entry != "..") {
+         unlink("$root".$entry);
+        }
     }
+    closedir($handle);
+}
 }
 function getUploadedFile() {
-    $files = glob('../../uploads/*tmp');
-    foreach ($files as $file) {
-        $tmpfname = $file;
+  $root = $_SERVER['DOCUMENT_ROOT'].'/uploads/';
+  if ($handle = opendir($root)) {
+    while (false !== ($entry = readdir($handle))) {
+        if ($entry != "." && $entry != "..") {
+         $tmpfname = $entry;
+        }
     }
-    return $tmpfname;
+    closedir($handle);
+}
+    return $root.$tmpfname;
 }
 ?>

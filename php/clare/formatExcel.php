@@ -1196,7 +1196,7 @@ if ($gv != - 1) {
 <!--Barra de navegaICón-->
    <nav class="white" role="navigation">
     <div class="nav-wrapper container">
-      <a id="logo-container" href="index.html" class="brand-logo"><img src="../../res/logo1.jpg" style="margin-top:7px;" alt="Smiley face" height="50" > </a>
+      <a id="logo-container" href="/" class="brand-logo"><img src="../../res/logo1.jpg" style="margin-top:7px;" alt="Smiley face" height="50" > </a>
       <ul class="right hide-on-med-and-down">
       <span style="color:black;">Dr. Roy Wong</span>
       </ul>
