@@ -10,6 +10,8 @@ $lastColumn = $worksheet->getHighestColumn();
 $lastColumnIndex = PHPExcel_Cell::columnIndexFromString($lastColumn);
 $headings = getHeadings($worksheet);
 $radioVal = $_POST["type"];
+$decimalNumber = $_POST["decimalNumber"];
+
 if (isset($_POST['acumulated'])) {
     $acum = true;
 } else {
@@ -96,22 +98,22 @@ if ($gv != - 1) {
         array_push($formatedSelected, getSelectedFormatted($sv[$i], $worksheet));
     }
 }
-function countVariablesPerGroup($selected, $formatedSelected, $worksheet, $groupVariable) {
+function countVariablesPerGroup($selected, $formatedSelected, $worksheet, $groupVariable,$decimalNumber) {
     // echo json_encode($formatedSelected[0]);
     for ($i = 0;$i < count($selected);$i++) {
         $columnData = new \stdClass();
         $columnData = getColumnData($selected[$i], $worksheet);
         for ($j = 0;$j < count($columnData);$j++) {
-            compareTitlePerColumn($j, $columnData[$j][0], $formatedSelected, $groupVariable, $worksheet);
+            compareTitlePerColumn($j, $columnData[$j][0], $formatedSelected, $groupVariable, $worksheet,$decimalNumber);
         }
     }
 }
-function countVariables($selected, $formatedSelected, $worksheet) {
+function countVariables($selected, $formatedSelected, $worksheet,$decimalNumber) {
     for ($i = 0;$i < count($selected);$i++) {
         $columnData = new \stdClass();
         $columnData = getColumnData($selected[$i], $worksheet);
         for ($j = 0;$j < count($columnData);$j++) {
-            compareTitlePerColumnWithoutGroup($j, $columnData[$j][0], $formatedSelected, $selected[$i], $worksheet);
+            compareTitlePerColumnWithoutGroup($j, $columnData[$j][0], $formatedSelected, $selected[$i], $worksheet,$decimalNumber);
         }
     }
 }
@@ -122,7 +124,7 @@ function calculatePercentage($total, $num) {
         return 0;
     }
 }
-function calculateConfidenceInterval($total, $num) {
+function calculateConfidenceInterval($total, $num, $decimalNumber) {
     $confidence = 95;
     $proportion = $num/$total;
     $percentaje = $proportion*100;
@@ -140,7 +142,7 @@ function calculateConfidenceInterval($total, $num) {
     // $mediaMinor = $x - ($zetaAlphaMedio * ($desviation / sqrt($n)));
     // $mediaMayor = $x + ($zetaAlphaMedio * ($desviation / sqrt($n)));
     // return "[" . number_format((float)$mediaMinor, 1, '.', '') . "," . number_format((float)$mediaMayor, 1, '.', '') . "]";
-    return "[" . number_format((float)$limitMinor, 1, '.', '') . "," . number_format((float)$limitMayor, 1, '.', '') . "]";
+    return "[" . number_format((float)$limitMinor, $decimalNumber, '.', '') . "," . number_format((float)$limitMayor, $decimalNumber, '.', '') . "]";
 
 }
 function calculateStandarVariation() {
@@ -160,7 +162,7 @@ function calculateStandarVariation() {
     // echo "La desviaICon estandar es: ".$sq;
 
 }
-function calculatePercentageAndAcum($formatedValue) {
+function calculatePercentageAndAcum($formatedValue,$decimalNumber) {
     for ($i = 0;$i < count($formatedValue->groups);$i++) {
         $item = $formatedValue->groups[$i];
         $item->percentage = calculatePercentage($formatedValue->total->number, $item->number);
@@ -169,12 +171,12 @@ function calculatePercentageAndAcum($formatedValue) {
         } else {
             $item->acumulated = $item->percentage + $formatedValue->groups[$i - 1]->acumulated;
         }
-        $item->percentageFormatted = number_format((float)$item->percentage, 1, '.', '') . '%';
-        $item->acumulatedFormatted = number_format((float)$item->acumulated, 1, '.', '') . '%';
-        $item->confidenceInterval = calculateConfidenceInterval($formatedValue->total->number, $item->number);
+        $item->percentageFormatted = number_format((float)$item->percentage, $decimalNumber, '.', '') . '%';
+        $item->acumulatedFormatted = number_format((float)$item->acumulated, $decimalNumber, '.', '') . '%';
+        $item->confidenceInterval = calculateConfidenceInterval($formatedValue->total->number, $item->number,$decimalNumber);
     }
 }
-function calculatePercentageAndAcumNoGroup($formatedValue, $itemTotal) {
+function calculatePercentageAndAcumNoGroup($formatedValue, $itemTotal, $decimalNumber) {
     for ($i = 0;$i < count($formatedValue->groups);$i++) {
         $item = $formatedValue->groups[$i];
         $item->percentage = calculatePercentage($itemTotal->total->number, $formatedValue->total->number);
@@ -183,15 +185,15 @@ function calculatePercentageAndAcumNoGroup($formatedValue, $itemTotal) {
         } else {
             $item->acumulated = $item->percentage + $formatedValue->groups[$i - 1]->acumulated;
         }
-        $item->percentageFormatted = number_format((float)$item->percentage, 1, '.', '') . '%';
+        $item->percentageFormatted = number_format((float)$item->percentage, $decimalNumber, '.', '') . '%';
         $item->acumulatedFormatted = number_format((float)$item->acumulated, 1, '.', '') . '%';
-        $item->confidenceInterval = calculateConfidenceInterval($itemTotal->total->number, $item->number);
+        $item->confidenceInterval = calculateConfidenceInterval($itemTotal->total->number, $item->number,$decimalNumber);
     }
 }
-function calculatePercentageAndAcumTotal($formatedSelected, $itemTotal) {
+function calculatePercentageAndAcumTotal($formatedSelected, $itemTotal, $decimalNumber) {
     for ($i = 0;$i < count($formatedSelected) - 1;$i++) {
-        $formatedSelected[$i]->total->percentageFormatted = number_format((float)100, 1, '.', '') . '%';
-        $formatedSelected[$i]->total->acumulatedFormatted = number_format((float)100, 1, '.', '') . '%';
+        $formatedSelected[$i]->total->percentageFormatted = number_format((float)100, $decimalNumber, '.', '') . '%';
+        $formatedSelected[$i]->total->acumulatedFormatted = number_format((float)100, $decimalNumber, '.', '') . '%';
     }
     for ($i = 0;$i < count($itemTotal->groups);$i++) {
         $itemTotal->groups[$i]->percentage = calculatePercentage($itemTotal->total->number, $itemTotal->groups[$i]->number);
@@ -200,16 +202,16 @@ function calculatePercentageAndAcumTotal($formatedSelected, $itemTotal) {
         } else {
             $itemTotal->groups[$i]->acumulated = $itemTotal->groups[$i]->percentage + $itemTotal->groups[$i - 1]->acumulated;
         }
-        $itemTotal->groups[$i]->percentageFormatted = number_format((float)$itemTotal->groups[$i]->percentage, 1, '.', '') . '%';
-        $itemTotal->groups[$i]->acumulatedFormatted = number_format((float)$itemTotal->groups[$i]->acumulated, 1, '.', '') . '%';
-        $itemTotal->groups[$i]->confidenceInterval = calculateConfidenceInterval(100, $itemTotal->groups[$i]->percentage);
+        $itemTotal->groups[$i]->percentageFormatted = number_format((float)$itemTotal->groups[$i]->percentage, $decimalNumber, '.', '') . '%';
+        $itemTotal->groups[$i]->acumulatedFormatted = number_format((float)$itemTotal->groups[$i]->acumulated, $decimalNumber, '.', '') . '%';
+        $itemTotal->groups[$i]->confidenceInterval = calculateConfidenceInterval(100, $itemTotal->groups[$i]->percentage,$decimalNumber);
     }
 }
-function calculatePercentageAndAcumTotalNoGroup($formatedSelected, $itemTotal) {
+function calculatePercentageAndAcumTotalNoGroup($formatedSelected, $itemTotal, $decimalNumber) {
     for ($i = 0;$i < count($formatedSelected);$i++) {
-        $formatedSelected[$i]->total->percentageFormatted = number_format((float)100, 1, '.', '') . '%';
-        $formatedSelected[$i]->total->acumulatedFormatted = number_format((float)100, 1, '.', '') . '%';
-        calculatePercentageAndAcumNoGroup($formatedSelected[$i], $itemTotal);
+        $formatedSelected[$i]->total->percentageFormatted = number_format((float)100, $decimalNumber, '.', '') . '%';
+        $formatedSelected[$i]->total->acumulatedFormatted = number_format((float)100, $decimalNumber, '.', '') . '%';
+        calculatePercentageAndAcumNoGroup($formatedSelected[$i], $itemTotal,$decimalNumber);
     }
     for ($i = 0;$i < count($itemTotal->groups);$i++) {
         $itemTotal->groups[$i]->percentage = calculatePercentage($itemTotal->total->number, $itemTotal->groups[$i]->number);
@@ -218,12 +220,12 @@ function calculatePercentageAndAcumTotalNoGroup($formatedSelected, $itemTotal) {
         } else {
             $itemTotal->groups[$i]->acumulated = $itemTotal->groups[$i]->percentage + $itemTotal->groups[$i - 1]->acumulated;
         }
-        $itemTotal->groups[$i]->percentageFormatted = number_format((float)$itemTotal->groups[$i]->percentage, 1, '.', '') . '%';
-        $itemTotal->groups[$i]->acumulatedFormatted = number_format((float)$itemTotal->groups[$i]->acumulated, 1, '.', '') . '%';
-        $itemTotal->groups[$i]->confidenceInterval = calculateConfidenceInterval(100, $itemTotal->groups[$i]->percentage);
+        $itemTotal->groups[$i]->percentageFormatted = number_format((float)$itemTotal->groups[$i]->percentage, $decimalNumber, '.', '') . '%';
+        $itemTotal->groups[$i]->acumulatedFormatted = number_format((float)$itemTotal->groups[$i]->acumulated, $decimalNumber, '.', '') . '%';
+        $itemTotal->groups[$i]->confidenceInterval = calculateConfidenceInterval(100, $itemTotal->groups[$i]->percentage,$decimalNumber);
     }
 }
-function calculateTotalPerSelected($formatedSelected, $itemTotal) {
+function calculateTotalPerSelected($formatedSelected, $itemTotal,$decimalNumber) {
     for ($i = 0;$i < count($formatedSelected) - 1;$i++) {
         for ($x = 0;$x < count($formatedSelected[$i]->groups);$x++) {
             $total = $itemTotal->groups[$x]->number + $formatedSelected[$i]->groups[$x]->number;
@@ -231,9 +233,9 @@ function calculateTotalPerSelected($formatedSelected, $itemTotal) {
         }
         $itemTotal->total->number = $itemTotal->total->number + $formatedSelected[$i]->total->number;
     }
-    calculatePercentageAndAcumTotal($formatedSelected, $itemTotal);
+    calculatePercentageAndAcumTotal($formatedSelected, $itemTotal,$decimalNumber);
 }
-function calculateTotalPerSelectedWithoutGroup($formatedSelected, $itemTotal) {
+function calculateTotalPerSelectedWithoutGroup($formatedSelected, $itemTotal,$decimalNumber) {
     for ($i = 0;$i < count($formatedSelected) - 1;$i++) {
         for ($x = 0;$x < count($formatedSelected[$i]->groups);$x++) {
             $total = $itemTotal->groups[$x]->number + $formatedSelected[$i]->groups[$x]->number;
@@ -241,9 +243,9 @@ function calculateTotalPerSelectedWithoutGroup($formatedSelected, $itemTotal) {
         }
         $itemTotal->total->number = $itemTotal->total->number + $formatedSelected[$i]->total->number;
     }
-    calculatePercentageAndAcumTotalNoGroup($formatedSelected, $itemTotal);
+    calculatePercentageAndAcumTotalNoGroup($formatedSelected, $itemTotal,$decimalNumber);
 }
-function compareTitlePerColumn($indexY, $data, $formatedSelected, $groupVariable, $worksheet) {
+function compareTitlePerColumn($indexY, $data, $formatedSelected, $groupVariable, $worksheet,$decimalNumber) {
     for ($i = 0;$i < count($formatedSelected);$i++) {
         $formatedValue = new \stdClass();
         for ($x = 0;$x < count($formatedSelected[$i]) - 1;$x++) {
@@ -257,7 +259,7 @@ function compareTitlePerColumn($indexY, $data, $formatedSelected, $groupVariable
                         $formatedValue->total->number = $formatedValue->total->number + 1;
                     }
                 }
-                calculatePercentageAndAcum($formatedValue);
+                calculatePercentageAndAcum($formatedValue,$decimalNumber);
             }
         }
     }
@@ -1155,18 +1157,16 @@ function printGroupTable($formatedSelected, $groupVariable, $worksheet, $selecte
     echo '</div>';
 }
 if ($gv != - 1) {
-    countVariablesPerGroup($sv, $formatedSelected, $worksheet, $groupVariable);
+    countVariablesPerGroup($sv, $formatedSelected, $worksheet, $groupVariable,$decimalNumber);
     for ($i = 0;$i < count($formatedSelected);$i++) {
-        calculateTotalPerSelected($formatedSelected[$i], $formatedSelected[$i][count($formatedSelected[$i]) - 1]);
+        calculateTotalPerSelected($formatedSelected[$i], $formatedSelected[$i][count($formatedSelected[$i]) - 1],$decimalNumber);
     }
 } else {
-    countVariables($sv, $formatedSelected, $worksheet);
+    countVariables($sv, $formatedSelected, $worksheet,$decimalNumber);
     for ($i = 0;$i < count($formatedSelected);$i++) {
-        calculateTotalPerSelectedWithoutGroup($formatedSelected[$i], $formatedSelected[$i][count($formatedSelected[$i]) - 1]);
+        calculateTotalPerSelectedWithoutGroup($formatedSelected[$i], $formatedSelected[$i][count($formatedSelected[$i]) - 1],$decimalNumber);
     }
 }
-// echo json_encode($formatedSelected);
-
 ?>
 
 <!DOCTYPE html>

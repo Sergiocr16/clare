@@ -105,6 +105,12 @@ function printForm($headings) {
     echo '<input type="checkbox" value="false" class="filled-in" id="acumulated" name="acumulated"/>';
     echo '<span>Mostrar acumulado</span>';
     echo '</label>';
+    echo ' <p>';
+    echo '   <label>';
+    echo '     <input class="with-gap" value="1" min="0" name="decimalNumber" type="number"/>';
+    echo '     <span>Número de decimales</span>';
+    echo '   </label>';
+    echo ' </p>';
     echo ' </p>';
     echo '</div>';
     echo '<div class="col s12" style="margin-top:20px;padding:0!important">';

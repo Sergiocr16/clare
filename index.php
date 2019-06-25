@@ -82,7 +82,7 @@ $_FILES['excelFile']['tmp_name'] = null;
             <h5 class="center">Importar tabla Excel</h5>
 
             <p class="light" style="text-align: center;">
-            	Un acceso optimizado especial para móbiles, ofrecemos la rapidez que deseas tener, obten un ligero y hermoso diseño, estilo material.
+            	Seleccione la tabla de excel de su dispositivo y suba el archivo.
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@ $_FILES['excelFile']['tmp_name'] = null;
             <h5 class="center">Definir grupos y variables</h5>
 
             <p class="light" style="text-align: center;">
-            	Tienes el acceso público a todos los contactos del blog, simplemente visita su perfil y listo! No debes esperar ningún permiso, NoteBlog es libre.
+            	Configure las variables de agrupación y la información que desea visualizar en el resultado.
             </p>
           </div>
         </div>
@@ -104,7 +104,7 @@ $_FILES['excelFile']['tmp_name'] = null;
             <h5 class="center">Visualizar resultados</h5>
 
             <p class="light" style="text-align: center;">
-            	¡Claro! Tenemos un chat en la sala del blog, puedes conocer a quien desees, ver los blogs de cada quien.
+            	Visualize los resultados agrupados de una manera ágil y sencilla. Exportelos a un archivo Word si así desea.
             </p>
           </div>
         </div>
