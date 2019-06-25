@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Bienvenido</title>
+    <title>Clare</title>
     <!--Optimizacion en móbiles-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="utf-8">
@@ -50,7 +50,7 @@
 
    <div>
        <?php
-require_once "../Classes/PHPExcel.php";
+require_once "PHPExcel.php";
 include 'globalMethods.php';
 deleteUploads();
 function printForm($headings) {

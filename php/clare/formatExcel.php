@@ -1,5 +1,5 @@
 <?php
-require_once "../Classes/PHPExcel.php";
+require_once "PHPExcel.php";
 include 'globalMethods.php';
 $tmpfname = getUploadedFile();
 $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
@@ -1172,7 +1172,7 @@ if ($gv != - 1) {
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Bienvenido</title>
+    <title>Clare</title>
     <!--OptimizaICon en móbiles-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="utf-8">
