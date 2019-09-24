@@ -104,7 +104,7 @@ function countVariablesPerGroup($selected, $formatedSelected, $worksheet, $group
         $columnData = new \stdClass();
         $columnData = getColumnData($selected[$i], $worksheet);
         for ($j = 0;$j < count($columnData);$j++) {
-            compareTitlePerColumn($j, $columnData[$j][0], $formatedSelected, $groupVariable, $worksheet,$decimalNumber);
+            compareTitlePerColumn($j,$i, $columnData[$j][0], $formatedSelected, $groupVariable, $worksheet,$decimalNumber);
         }
     }
 }
@@ -113,7 +113,7 @@ function countVariables($selected, $formatedSelected, $worksheet,$decimalNumber)
         $columnData = new \stdClass();
         $columnData = getColumnData($selected[$i], $worksheet);
         for ($j = 0;$j < count($columnData);$j++) {
-            compareTitlePerColumnWithoutGroup($j, $columnData[$j][0], $formatedSelected, $selected[$i], $worksheet,$decimalNumber);
+            compareTitlePerColumnWithoutGroup($j, $i, $columnData[$j][0], $formatedSelected, $selected[$i], $worksheet,$decimalNumber);
         }
     }
 }
@@ -245,12 +245,12 @@ function calculateTotalPerSelectedWithoutGroup($formatedSelected, $itemTotal,$de
     }
     calculatePercentageAndAcumTotalNoGroup($formatedSelected, $itemTotal,$decimalNumber);
 }
-function compareTitlePerColumn($indexY, $data, $formatedSelected, $groupVariable, $worksheet,$decimalNumber) {
+function compareTitlePerColumn($indexY,$motherColumn, $data, $formatedSelected, $groupVariable, $worksheet,$decimalNumber) {
     for ($i = 0;$i < count($formatedSelected);$i++) {
         $formatedValue = new \stdClass();
         for ($x = 0;$x < count($formatedSelected[$i]) - 1;$x++) {
             $formatedValue = $formatedSelected[$i][$x];
-            if (compareStrings($data, $formatedValue->title)) {
+            if (compareStrings($data, $formatedValue->title) && $i == $motherColumn) {
                 for ($j = 0;$j < count($groupVariable->categories);$j++) {
                     $valueInGroupColumn = new \stdClass();
                     $valueInGroupColumn = obtainValueAtCoordinate($groupVariable->index, $indexY + 2, $worksheet) . "";
@@ -264,13 +264,13 @@ function compareTitlePerColumn($indexY, $data, $formatedSelected, $groupVariable
         }
     }
 }
-function compareTitlePerColumnWithoutGroup($indexY, $data, $formatedSelected, $indexX, $worksheet) {
+function compareTitlePerColumnWithoutGroup($indexY,$motherColumn, $data, $formatedSelected, $indexX, $worksheet,$decimalNumber) {
     $total = 0;
     for ($i = 0;$i < count($formatedSelected);$i++) {
         $formatedValue = new \stdClass();
         for ($x = 0;$x < count($formatedSelected[$i]);$x++) {
             $formatedValue = $formatedSelected[$i][$x];
-            if (compareStrings($data, $formatedValue->title)) {
+            if (compareStrings($data, $formatedValue->title) && $i == $motherColumn) {
                 $valueInSelectedColumn = new \stdClass();
                 $valueInSelectedColumn = obtainValueAtCoordinate($indexX, $indexY + 2, $worksheet) . "";
                 $formatedValue->groups[0]->number = $formatedValue->groups[0]->number + 1;
