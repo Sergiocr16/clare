@@ -53,8 +53,12 @@
 require_once "PHPExcel.php";
 include 'globalMethods.php';
 deleteUploads();
+error_reporting(E_ERROR | E_PARSE);
+
 function printForm($headings) {
     echo '<div class="container">';
+    // echo '<form  action="/php/clare/formatExcel.php" method="POST" enctype="multipart/form-data">     NUBE';
+    // echo '<form  action="formatExcel.php" method="POST" enctype="multipart/form-data">'    LOCAL;
     echo '<form  action="/php/clare/formatExcel.php" method="POST" enctype="multipart/form-data">';
     echo '<h6>Variable de grupo:</h6>';
     echo '<select  class="mdl-textfield__input validate" id="groupVariable" name="groupVariable" >';
@@ -105,6 +109,12 @@ function printForm($headings) {
     echo '<input type="checkbox" value="false" class="filled-in" id="acumulated" name="acumulated"/>';
     echo '<span>Mostrar acumulado</span>';
     echo '</label>';
+    echo ' <p>';
+    echo '<label>';
+    echo '<input type="checkbox" value="false" class="filled-in" id="verticalPercentage" name="verticalPercentage"/>';
+    echo '<span>Mostrar porcentaje en columnas</span>';
+    echo '</label>';
+    echo ' </p>';
     echo ' <p>';
     echo '   <label>';
     echo '     <input class="with-gap" value="1" min="0" name="decimalNumber" type="number"/>';

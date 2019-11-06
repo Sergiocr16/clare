@@ -63,6 +63,8 @@ function obtainValueAtCoordinate($x, $y, $worksheet) {
     return $cellValue;
 }
 function deleteUploads() {
+  // $root = $_SERVER['DOCUMENT_ROOT'].'/clare/uploads/';   LOCAL
+  // $root = $_SERVER['DOCUMENT_ROOT'].'/uploads/'   NUBE;
   $root = $_SERVER['DOCUMENT_ROOT'].'/uploads/';
   if ($handle = opendir($root)) {
     while (false !== ($entry = readdir($handle))) {
@@ -74,7 +76,9 @@ function deleteUploads() {
 }
 }
 function getUploadedFile() {
-  $root = $_SERVER['DOCUMENT_ROOT'].'/uploads/';
+  // $root = $_SERVER['DOCUMENT_ROOT'].'/clare/uploads/';   LOCAL
+  // $root = $_SERVER['DOCUMENT_ROOT'].'/uploads/'   NUBE;
+  $root = $_SERVER['DOCUMENT_ROOT'].'/uploads/' ;
   if ($handle = opendir($root)) {
     while (false !== ($entry = readdir($handle))) {
         if ($entry != "." && $entry != "..") {

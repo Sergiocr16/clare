@@ -17,6 +17,12 @@ if (isset($_POST['acumulated'])) {
 } else {
     $acum = false;
 }
+
+if (isset($_POST['verticalPercentage'])) {
+    $verticalPercentage = true;
+} else {
+    $verticalPercentage = false;
+}
 if (isset($_POST['selected']) && isset($_POST['groupVariable'])) {
     $sv = $_POST['selected'];
     $gv = $_POST['groupVariable'];
@@ -281,7 +287,7 @@ function compareTitlePerColumnWithoutGroup($indexY,$motherColumn, $data, $format
     }
 }
 
-function printNoGroupTableWord($formatedSelected, $worksheet, $selected, $radioVal) {
+function printNoGroupTableWord($formatedSelected, $worksheet, $selected, $radioVal,$verticalPercentage,$decimalNumber) {
   echo '<div id="exportContentNoGroup" style="width:100%">';
   echo "<table style='width:100%;width:100.0%;border-collapse:collapse;border:none;mso-border-alt:solid #BFBFBF .5pt;
    mso-border-themecolor:background1;mso-border-themeshade:191;mso-yfti-tbllook:1184;mso-padding-alt:0cm 5.4pt 0cm 5.4pt;font-family:Arial'>";
@@ -354,7 +360,14 @@ mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
     mso-border-top-themecolor:background1;mso-border-top-themeshade:191;
     mso-border-alt:solid #BFBFBF .5pt;mso-border-themecolor:background1;
     mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
-                    echo $formatedSelected[$row][$i]->groups[$x]->number;
+     echo '<div>';
+                     echo $formatedSelected[$row][$i]->groups[$x]->number;
+                     echo  '</div>';
+                     if ($verticalPercentage) {
+                     echo '<div style="border-top:1px #bfbfbf solid;font-size: 12px;color: #a09e9e;">';
+                     echo  calculatePercentageVertical($formatedSelected[$row][$i]->groups[$x]->number,$formatedSelected,$selected,$decimalNumber);
+                     echo  '</div>';
+                   }
                     echo "</td>";
                     if ($radioVal == 2) {
                       echo '<td style="border:solid #BFBFBF 1.0pt;mso-border-themecolor:background1;
@@ -405,8 +418,19 @@ mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
     echo '</div>';
 }
 
+function calculatePercentageVertical($number,$formatedSelected,$selected,$decimalNumber){
 
-function printNoGroupTable($formatedSelected, $worksheet, $selected, $radioVal) {
+// $formatedSelected[$row][$i]->groups[$x]->number;
+  $finalRow = count($selected)-1;
+  $total  = $formatedSelected[$finalRow][count($formatedSelected[$finalRow])-1]->groups[count($formatedSelected[$finalRow][count($formatedSelected[$finalRow])-1]->groups)-1]->number;
+return number_format((float)calculatePercentage($total,$number), $decimalNumber, '.', '') . '%';
+}
+
+function calculatePercentageVerticalGroup($number,$total){
+// $formatedSelected[$row][$i]->groups[$x]->number;
+return number_format((float)calculatePercentage($total,$number), $decimalNumber, '.', '') . '%';
+}
+function printNoGroupTable($formatedSelected, $worksheet, $selected, $radioVal,$verticalPercentage,$decimalNumber) {
     echo '<div id="" style="width:100%">';
     echo "<table style='width:100%; '>";
     echo "<tbody>";
@@ -478,7 +502,14 @@ mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
     mso-border-top-themecolor:background1;mso-border-top-themeshade:191;
     mso-border-alt:solid #BFBFBF .5pt;mso-border-themecolor:background1;
     mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
+    echo '<div>';
                     echo $formatedSelected[$row][$i]->groups[$x]->number;
+                    echo  '</div>';
+                    if ($verticalPercentage) {
+                    echo '<div style="border-top:1px #bfbfbf solid;font-size: 12px;color: #a09e9e;">';
+                    echo  calculatePercentageVertical($formatedSelected[$row][$i]->groups[$x]->number,$formatedSelected,$selected,$decimalNumber);
+                    echo  '</div>';
+                  }
                     echo "</td>";
                     if ($radioVal == 2) {
                       echo '<td style="border:solid #BFBFBF 1.0pt;mso-border-themecolor:background1;
@@ -528,7 +559,8 @@ mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
     echo "</table>";
     echo '</div>';
 }
-function printGroupTableWord($formatedSelected, $groupVariable, $worksheet, $selected, $radioVal, $acum) {
+
+function printGroupTableWord($formatedSelected, $groupVariable, $worksheet, $selected, $radioVal, $acum,$verticalPercentage,$decimalNumber) {
     // $headings = getHeadings($worksheet);
     echo '<div id="exportContent" style="width:100%">';
     echo "<table style='width:100%;    width:100.0%;border-collapse:collapse;border:none;mso-border-alt:solid #BFBFBF .5pt;
@@ -764,7 +796,14 @@ mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
     mso-border-top-themecolor:background1;mso-border-top-themeshade:191;
     mso-border-alt:solid #BFBFBF .5pt;mso-border-themecolor:background1;
     mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
+    echo '<div>';
                     echo $formatedSelected[$row][$i]->groups[$x]->number;
+                    echo  '</div>';
+                    if ($verticalPercentage) {
+                    echo '<div style="border-top:1px #bfbfbf solid;font-size: 12px;color: #a09e9e;">';
+                    echo  calculatePercentageVerticalGroup($formatedSelected[$row][$i]->groups[$x]->number,$formatedSelected[$row][count($formatedSelected[$row])-1]->groups[$x]->number);
+                    echo  '</div>';
+                  }
                     echo "</td>";
                 }
                 echo '<td style="border:solid #BFBFBF 1.0pt;mso-border-themecolor:background1;
@@ -798,7 +837,14 @@ mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
     mso-border-top-themecolor:background1;mso-border-top-themeshade:191;
     mso-border-alt:solid #BFBFBF .5pt;mso-border-themecolor:background1;
     mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
+    echo '<div>';
                     echo $formatedSelected[$row][$i]->groups[$x]->number;
+                    echo  '</div>';
+                    if ($verticalPercentage) {
+                    echo '<div style="border-top:1px #bfbfbf solid;font-size: 12px;color: #a09e9e;">';
+                    echo  calculatePercentageVerticalGroup($formatedSelected[$row][$i]->groups[$x]->number,$formatedSelected[$row][count($formatedSelected[$row])-1]->groups[$x]->number);
+                    echo  '</div>';
+                  }
                     echo "</td>";
                     echo '<td style="border:solid #BFBFBF 1.0pt;mso-border-themecolor:background1;
       mso-border-themeshade:191;border-top:none;mso-border-top-alt:solid #BFBFBF .5pt;
@@ -851,7 +897,14 @@ mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
     mso-border-top-themecolor:background1;mso-border-top-themeshade:191;
     mso-border-alt:solid #BFBFBF .5pt;mso-border-themecolor:background1;
     mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
+    echo '<div>';
                     echo $formatedSelected[$row][$i]->groups[$x]->number;
+                    echo  '</div>';
+                    if ($verticalPercentage) {
+                    echo '<div style="border-top:1px #bfbfbf solid;font-size: 12px;color: #a09e9e;">';
+                    echo  calculatePercentageVerticalGroup($formatedSelected[$row][$i]->groups[$x]->number,$formatedSelected[$row][count($formatedSelected[$row])-1]->groups[$x]->number);
+                    echo  '</div>';
+                  }
                     echo "</td>";
                     echo '<td style="border:solid #BFBFBF 1.0pt;mso-border-themecolor:background1;
       mso-border-themeshade:191;border-top:none;mso-border-top-alt:solid #BFBFBF .5pt;
@@ -918,7 +971,7 @@ mso-border-themeshade:191;padding:0cm 5.4pt 0cm 5.4pt">';
     echo "</table>";
     echo '</div>';
 }
-function printGroupTable($formatedSelected, $groupVariable, $worksheet, $selected, $radioVal, $acum) {
+function printGroupTable($formatedSelected, $groupVariable, $worksheet, $selected, $radioVal, $acum, $verticalPercentage,$decimalNumber) {
     // $headings = getHeadings($worksheet);
     echo '<div id="" style="width:100%">';
     echo "<table style='width:100%; '>";
@@ -1054,7 +1107,14 @@ function printGroupTable($formatedSelected, $groupVariable, $worksheet, $selecte
                 echo "</td>";
                 for ($x = 0;$x < count($formatedSelected[$row][$i]->groups);$x++) {
                     echo "<td>";
-                    echo $formatedSelected[$row][$i]->groups[$x]->number;
+                    echo '<div>';
+                                    echo $formatedSelected[$row][$i]->groups[$x]->number;
+                                    echo  '</div>';
+                                    if ($verticalPercentage) {
+                                    echo '<div style="border-top:1px #bfbfbf solid;font-size: 12px;color: #a09e9e;">';
+                                    echo  calculatePercentageVerticalGroup($formatedSelected[$row][$i]->groups[$x]->number,$formatedSelected[$row][count($formatedSelected[$row])-1]->groups[$x]->number);
+                                    echo  '</div>';
+                                  }
                     echo "</td>";
                 }
                 echo "<td>";
@@ -1062,6 +1122,7 @@ function printGroupTable($formatedSelected, $groupVariable, $worksheet, $selecte
                     echo $formatedSelected[$row][$i]->total->number;
                 } else {
                     echo $formatedSelected[$row][$i]->total->number;
+
                 }
                 // echo $formatedSelected[$row][$i]->total->number;
                 echo "</td>";
@@ -1076,7 +1137,15 @@ function printGroupTable($formatedSelected, $groupVariable, $worksheet, $selecte
                 echo "</td>";
                 for ($x = 0;$x < count($formatedSelected[$row][$i]->groups);$x++) {
                     echo "<td>";
-                    echo $formatedSelected[$row][$i]->groups[$x]->number;
+                    echo '<div>';
+                                    echo $formatedSelected[$row][$i]->groups[$x]->number;
+                                    echo  '</div>';
+                                    if ($verticalPercentage) {
+                                    echo '<div style="border-top:1px #bfbfbf solid;font-size: 12px;color: #a09e9e;">';
+                                    echo  calculatePercentageVerticalGroup($formatedSelected[$row][$i]->groups[$x]->number,$formatedSelected[$row][count($formatedSelected[$row])-1]->groups[$x]->number);
+
+                                    echo  '</div>';
+                                  }
                     echo "</td>";
                     echo "<td>";
                     echo $formatedSelected[$row][$i]->groups[$x]->percentageFormatted;
@@ -1109,7 +1178,14 @@ function printGroupTable($formatedSelected, $groupVariable, $worksheet, $selecte
                 echo "</td>";
                 for ($x = 0;$x < count($formatedSelected[$row][$i]->groups);$x++) {
                     echo "<td>";
-                    echo $formatedSelected[$row][$i]->groups[$x]->number;
+                    echo '<div>';
+                                    echo $formatedSelected[$row][$i]->groups[$x]->number;
+                                    echo  '</div>';
+                                    if ($verticalPercentage) {
+                                    echo '<div style="border-top:1px #bfbfbf solid;font-size: 12px;color: #a09e9e;">';
+                                    echo  calculatePercentageVerticalGroup($formatedSelected[$row][$i]->groups[$x]->number,$formatedSelected[$row][count($formatedSelected[$row])-1]->groups[$x]->number);
+                                    echo  '</div>';
+                                  }
                     echo "</td>";
                     echo "<td>";
                     echo $formatedSelected[$row][$i]->groups[$x]->percentageFormatted;
@@ -1224,24 +1300,25 @@ if ($gv != - 1) {
 
   <?php
 if ($gv != - 1) {
-    printGroupTable($formatedSelected, $groupVariable, $worksheet, $sv, $radioVal, $acum);
+    printGroupTable($formatedSelected, $groupVariable, $worksheet, $sv, $radioVal, $acum,$verticalPercentage,$decimalNumber);
 } else {
-    printNoGroupTable($formatedSelected, $worksheet, $sv, $radioVal, $acum);
+    printNoGroupTable($formatedSelected, $worksheet, $sv, $radioVal, $verticalPercentage,$decimalNumber);
 }
 ?>
   </div>
   <div class="container " style="width:90%!important;display:none">
     <?php
 if ($gv != - 1) {
-    printGroupTableWord($formatedSelected, $groupVariable, $worksheet, $sv, $radioVal, $acum);
+    printGroupTableWord($formatedSelected, $groupVariable, $worksheet, $sv, $radioVal, $acum,$verticalPercentage,$decimalNumber);
 }else{
-  printNoGroupTableWord($formatedSelected, $worksheet, $sv, $radioVal, $acum);
+    printNoGroupTableWord($formatedSelected, $worksheet, $sv, $radioVal, $verticalPercentage,$decimalNumber);
 }
 ?>
+<h1>HHAA</h1>
+
   </div>
 
   <a class="btn-floating btn-large waves-effect waves-light  teal lighten-2"  onClick="javascript:history.go(-2)" style="float:left; position:fixed; bottom:10px;left:10px;"><i class="material-icons">replay</i></a>
-
 <?php
 if($gv != - 1){
 echo '<a onclick="Export2DocGroup()" class="btn-floating btn-large waves-effect waves-light deep-orange lighten-1 pulse" style="float:right; position:fixed; bottom:10px;right:10px;"><i class="material-icons">cloud_download</i></a>';
